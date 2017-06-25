@@ -1,4 +1,4 @@
-# T-spanner
+# [WIP] T-spanner
 
 This is a school assignment.
 

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <stdio.h>
 
 #include "error.h"
 #include "types.h"
@@ -86,8 +87,18 @@ int load_graph(const char* path, struct graph_t *graph) {
 }
 
 int output_graph(struct graph_t *graph, const char *path) {
-  (void)graph;
-  (void)path;
+  FILE *f = fopen(path, "w");
+  if (!f)
+    return STATUS_ERROR_IO;
+
+  fprintf(f, "digraph {\n");
+  for (uint32_t i = 0; i < graph->edge_nbr; i++) { 
+    fprintf(f, "\t%d -> %d [weight=\"%d\"];\n",
+      graph->edges[i].a, graph->edges[i].b, graph->edges[i].w);
+  }
+  fprintf(f, "}\n");
+
+  fclose(f);
 
   return STATUS_SUCCESS;
 }
