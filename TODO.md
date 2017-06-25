@@ -1,6 +1,6 @@
-[ ] Input csv parsing
-[ ] Output dot
-[ ] Implement c++ simple greedy spanner
-[ ] Cleanup
-[ ] Implement C++ pair decomposition spanner
-[ ] Implement GPU pair decomposition spanner
+- [X] Input parsing
+- [ ] Output dot
+- [ ] Implement c++ simple greedy spanner
+- [ ] Cleanup
+- [ ] Implement C++ pair decomposition spanner
+- [ ] Implement GPU pair decomposition spanner
