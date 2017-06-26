@@ -1,5 +1,6 @@
 - [X] Input parsing
 - [X] Output dot
+- [X] Dijkstra
 - [ ] Implement c++ simple greedy spanner
 - [ ] Cleanup
 - [ ] Implement C++ pair decomposition spanner

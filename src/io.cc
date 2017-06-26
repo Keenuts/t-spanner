@@ -16,16 +16,16 @@ static int edge_exists(std::vector<struct edge_t> &edges, struct edge_t edge) {
   return 0;
 };
 
-static int parse_file(std::ifstream &in, std::vector<struct edge_t> &edges) {
-  std::map<std::string, int> names;
-  int ids[2] = { 0 };
-  int index = 0;
-  int weight = -1;
+static int parse_file(std::ifstream &in, std::vector<struct edge_t> &edges, uint32_t *k) {
+  std::map<std::string, uint32_t> names;
+  uint32_t ids[2] = { 0 };
+  uint32_t index = 0;
+  uint32_t weight = -1;
 
-  for (int line = 0; !in.eof(); line++) {
+  for (uint32_t line = 0; !in.eof(); line++) {
     std::string n;
 
-    for (int i = 0; i < 2; i++) {
+    for (uint32_t i = 0; i < 2; i++) {
       in >> n;
       if (in.eof() && i == 0)
         break;
@@ -45,7 +45,7 @@ static int parse_file(std::ifstream &in, std::vector<struct edge_t> &edges) {
 
     weight = -1;
     in >> weight;
-    if (weight == -1)
+    if (weight == (uint32_t)-1)
       return STATUS_ERROR_PARSING_NUMBER;
 
     struct edge_t e = {
@@ -60,6 +60,8 @@ static int parse_file(std::ifstream &in, std::vector<struct edge_t> &edges) {
       return STATUS_ERROR_PARSING_EXISTANT_EDGE;
     }
   }
+
+  *k = index;
   return STATUS_SUCCESS;
 }
 
@@ -67,22 +69,23 @@ int load_graph(const char* path, struct graph_t *graph) {
 
   std::ifstream in(path);
   std::vector<struct edge_t> edges;
-  int res;
+  uint32_t res, k;
 
   if (!in.is_open())
     return STATUS_ERROR_IO;
 
-  res = parse_file(in, edges);
+  res = parse_file(in, edges, &k);
   if (res != STATUS_SUCCESS)
     return res;
 
   if (graph->edges)
     printf("[!] %s: graph pointer not null\n", __func__);
   graph->edge_nbr = edges.size();
+  graph->k = k;
   graph->edges = new struct edge_t[edges.size()];
   std::memcpy(graph->edges, edges.data(), edges.size() * sizeof(struct edge_t));
 
-  printf("[*] Loading a graph with %zu edges.\n", graph->edge_nbr);
+  printf("[*] Loading a graph with %u edges.\n", graph->edge_nbr);
   return STATUS_SUCCESS;
 }
 
@@ -93,8 +96,8 @@ int output_graph(struct graph_t *graph, const char *path) {
 
   fprintf(f, "digraph {\n");
   for (uint32_t i = 0; i < graph->edge_nbr; i++) { 
-    fprintf(f, "\t%d -> %d [weight=\"%d\"];\n",
-      graph->edges[i].a, graph->edges[i].b, graph->edges[i].w);
+    fprintf(f, "\t%d -> %d [label=\"%d\", weight=\"%d\"];\n",
+      graph->edges[i].a, graph->edges[i].b, graph->edges[i].w, graph->edges[i].w);
   }
   fprintf(f, "}\n");
 

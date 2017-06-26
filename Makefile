@@ -1,11 +1,11 @@
-CXXFLAGS=-Wall -Wextra -Werror -O3 `pkg-config --cflags $(LIBS)`
+CXXFLAGS=-Wall -Wextra -Werror -Og -g `pkg-config --cflags $(LIBS)`
 
 LIBS=OpenCL python3
 LDLIBS=`pkg-config --libs $(LIBS)`
 
 VPATH=src
 
-OBJ=main.o io.o app.o
+OBJ=main.o io.o app.o linear.o pathfinding.o
 
 libpython: CXXFLAGS+=-fPIC
 libpython: $(OBJ)

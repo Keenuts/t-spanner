@@ -2,13 +2,15 @@
 #include <cstring>
 
 #include "io.h"
+#include "linear.h"
 #include "messages.h"
 #include "types.h"
 
 int main(int argc, char** argv) {
   int res;
-  struct graph_t graph;
+  struct graph_t graph, output;
   std::memset(&graph, 0, sizeof(struct graph_t));
+  std::memset(&output, 0, sizeof(struct graph_t));
 
   if (argc != 3) {
     std::cout << MSG_USAGE_INTRO << argv[0] << MSG_USAGE_PARAMS << std::endl;
@@ -21,9 +23,13 @@ int main(int argc, char** argv) {
     return res;
   }
 
-  //TODO: ADD GRAPH COMP
+  res = greedy_linear(&graph, &output);
+  if (res) {
+    printf("[!] Greedy (linear) returned with error 0x%x\n", res);
+    return res;
+  }
 
-  res = output_graph(&graph, argv[2]); 
+  res = output_graph(&output, argv[2]); 
   if (res)
     return res;
   return 0;
