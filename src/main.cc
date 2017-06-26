@@ -23,12 +23,17 @@ int main(int argc, char** argv) {
     return res;
   }
 
-  res = greedy_linear(&graph, &output);
+  printf("[*] Input graph has %u nodes.\n", graph.k);
+  printf("[*] Input graph has %u edges.\n", graph.edge_nbr);
+
+  res = greedy_linear(&graph, &output, 2);
   if (res) {
     printf("[!] Greedy (linear) returned with error 0x%x\n", res);
     return res;
   }
 
+  printf("[*] Output graph has %u nodes.\n", output.k);
+  printf("[*] Output graph has %u edges.\n", output.edge_nbr);
   res = output_graph(&output, argv[2]); 
   if (res)
     return res;

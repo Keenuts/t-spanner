@@ -1,14 +1,15 @@
-#include <vector>
-#include <sys/types.h>
+#include <limits>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <vector>
 
 #include "error.h"
 #include "types.h"
 
-static uint32_t find_min(std::vector<uint32_t> &nodes, std::vector<uint32_t> &weights)
+static uint32_t find_min(std::vector<uint32_t> &nodes, std::vector<float> &weights)
 {
-  uint32_t min = -1;
+  float min = std::numeric_limits<float>::infinity();
   uint32_t id = -1;
 
   for (uint32_t i = 0; i < nodes.size(); i++) {
@@ -22,14 +23,14 @@ static uint32_t find_min(std::vector<uint32_t> &nodes, std::vector<uint32_t> &we
 }
 
 int dijkstra(std::vector<struct edge_t> &edges, std::vector<uint32_t> &path,
-             uint32_t k, uint32_t a, uint32_t b)
+             uint32_t k, uint32_t a, uint32_t b, float *cost)
 {
-  std::vector<uint32_t> weight(k);
+  std::vector<float> weight(k);
   std::vector<uint32_t> predecessor(k);
   std::vector<uint32_t> q(k);
 
   for (uint32_t i = 0; i < k; i++) {
-    weight[i] = -1;
+    weight[i] = std::numeric_limits<float>::infinity();
     q[i] = i;
   }
   weight[a] = 0;
@@ -53,6 +54,7 @@ int dijkstra(std::vector<struct edge_t> &edges, std::vector<uint32_t> &path,
   }
 
   uint32_t p = b;
+  *cost = weight[b];
   do {
     path.insert(path.begin(), p);
     p = predecessor[p];

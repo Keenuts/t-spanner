@@ -5,59 +5,65 @@
 #include <string>
 #include <cstring>
 #include <stdio.h>
+#include <cmath>
 
 #include "error.h"
 #include "types.h"
 
-static int edge_exists(std::vector<struct edge_t> &edges, struct edge_t edge) {
-  for (struct edge_t e : edges)
-    if (e.a == edge.a && e.b == edge.b && e.w == edge.w)
-      return 1;
-  return 0;
-};
+static float node_distance(struct node_t a, struct node_t b)
+{
+  return std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2));
+}
 
-static int parse_file(std::ifstream &in, std::vector<struct edge_t> &edges, uint32_t *k) {
-  std::map<std::string, uint32_t> names;
-  uint32_t ids[2] = { 0 };
+static int parse_file(
+  std::ifstream &in,
+  std::vector<struct edge_t> &edges,
+  std::vector<struct node_t> &nodes,
+  uint32_t *k
+  )
+{
+  std::map<std::string, struct node_t> names;
   uint32_t index = 0;
-  uint32_t weight = -1;
 
   for (uint32_t line = 0; !in.eof(); line++) {
-    std::string n;
+    std::string name;
+    float x, y;
 
-    for (uint32_t i = 0; i < 2; i++) {
-      in >> n;
-      if (in.eof() && i == 0)
-        break;
-      else if (in.eof())
-        return STATUS_ERROR_PARSING_INCOMPLETE;
-
-      auto e = names.find(n);
-      if (e == names.end()) {
-        ids[i] = index++;
-        names.emplace(std::make_pair(n, ids[i]));
-      }
-      else
-        ids[i] = e->second;
-    }
-    if(in.eof()) //EOF only arise when reading on EOF, not before...
+    in >> name;
+    if (in.eof())
       break;
 
-    weight = -1;
-    in >> weight;
-    if (weight == (uint32_t)-1)
-      return STATUS_ERROR_PARSING_NUMBER;
+    in >> x;
+    in >> y;
 
-    struct edge_t e = {
-      .a = ids[0],
-      .b = ids[1],
-      .w = weight,
+    if (in.eof()) {
+      printf("[!] %s: node redefined at the line : %u\n", __func__, line);
+      return STATUS_ERROR_PARSING_INCOMPLETE;
+    }
+
+    struct node_t node = {
+      .id = index,
+      .x = x,
+      .y = y,
     };
-    if (!edge_exists(edges, e))
+
+    auto res = names.emplace(std::make_pair(name, node));
+    if (res.second)
+      index++;
+  }
+
+  for (const auto &a : names) {
+    nodes.push_back(a.second);
+    for (const auto &b : names) {
+      if (a.second.id == b.second.id)
+        continue;
+
+      struct edge_t e {
+        .a = a.second.id,
+        .b = b.second.id,
+        .w = node_distance(a.second, b.second),
+      };
       edges.push_back(e);
-    else {
-      printf("[!] %s: Edge at line %d already exists.\n", __func__, line);
-      return STATUS_ERROR_PARSING_EXISTANT_EDGE;
     }
   }
 
@@ -69,12 +75,13 @@ int load_graph(const char* path, struct graph_t *graph) {
 
   std::ifstream in(path);
   std::vector<struct edge_t> edges;
+  std::vector<struct node_t> nodes;
   uint32_t res, k;
 
   if (!in.is_open())
     return STATUS_ERROR_IO;
 
-  res = parse_file(in, edges, &k);
+  res = parse_file(in, edges, nodes, &k);
   if (res != STATUS_SUCCESS)
     return res;
 
@@ -82,8 +89,10 @@ int load_graph(const char* path, struct graph_t *graph) {
     printf("[!] %s: graph pointer not null\n", __func__);
   graph->edge_nbr = edges.size();
   graph->k = k;
+  graph->nodes = new struct node_t[k];
   graph->edges = new struct edge_t[edges.size()];
   std::memcpy(graph->edges, edges.data(), edges.size() * sizeof(struct edge_t));
+  std::memcpy(graph->nodes, nodes.data(), nodes.size() * sizeof(struct node_t));
 
   printf("[*] Loading a graph with %u edges.\n", graph->edge_nbr);
   return STATUS_SUCCESS;
@@ -97,7 +106,8 @@ int output_graph(struct graph_t *graph, const char *path) {
   fprintf(f, "digraph {\n");
   for (uint32_t i = 0; i < graph->edge_nbr; i++) { 
     fprintf(f, "\t%d -> %d [label=\"%d\", weight=\"%d\"];\n",
-      graph->edges[i].a, graph->edges[i].b, graph->edges[i].w, graph->edges[i].w);
+      graph->edges[i].a, graph->edges[i].b, (uint32_t)graph->edges[i].w,
+      (uint32_t)graph->edges[i].w);
   }
   fprintf(f, "}\n");
 
