@@ -58,11 +58,8 @@ int greedy_linear(struct graph_t *graph, struct graph_t *output, float t)
   for (struct edge_t e : edges_a) {
     float len = path_length(edges_b, graph->k, e.a, e.b);
     float d = t * node_distance(graph->nodes[e.a], graph->nodes[e.b]);
-    printf("%f/%f\n", len, d);
-    if (len > d) {
-      printf("+\n");
+    if (len > d)
       edges_b.push_back(e);
-    }
   }
 
   output->k = count_nodes(edges_b);
