@@ -11,10 +11,10 @@ all: standalone
 
 libpython: CXXFLAGS+=-fPIC
 libpython: $(OBJ)
-	$(CXX) -shared $(LDFLAGS) $^ $(LDLIBS) -o spanner.so
+	$(CXX) -shared $(LDFLAGS) $^ $(LDLIBS) -o tspanner.so
 
 standalone: $(OBJ)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 clean:
-	$(RM) spanner.so standalone $(OBJ) output.png
+	$(RM) tspanner.so standalone $(OBJ) output.png

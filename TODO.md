@@ -1,7 +1,11 @@
-- [X] Input parsing
-- [X] Output dot
-- [X] Dijkstra
-- [X] Implement c++ simple greedy spanner
+- [X] Input parsing (Nathan)
+- [X] Output dot (Nathan)
+- [X] Dijkstra (Nathan)
+- [X] Implement c++ simple greedy spanner (Nathan)
 - [ ] Cleanup
-- [ ] Implement C++ pair decomposition spanner
+- [ ] Implement C++ pair decomposition spanner (Thomas)
+- [ ] Implement C++ Theta-graph (Paul)
+- [ ] Implement GPU greedy spanner (Nathan)
 - [ ] Implement GPU pair decomposition spanner
+- [X] Basic Python module (calling functions from python (Nathan)
+- [ ] Use our graph as input for NetworkX (Python) (Nathan)
