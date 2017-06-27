@@ -33,41 +33,30 @@ HyperRect<T>::HyperRect(const std::vector<Point<T>>& s) {
 /* Split rectangle on maximum dimension */
 template <typename T>
 std::pair<HyperRect<T>, HyperRect<T>> HyperRect<T>::split() const {
-  std::pair<T, T> l_x;
-  std::pair<T, T> l_y;
-  std::pair<T, T> r_x;
-  std::pair<T, T> r_y;
-
-  auto x = intervals[0].second - intervals[0].first;
-  auto y = intervals[1].second - intervals[1].first;
-  auto max = std::max(x, y);
-
-  if (max == x) {
-    auto max_x = (intervals[0].first + intervals[0].second) / 2;
-    l_x = std::make_pair(intervals[0].first, max_x);
-    r_x = std::make_pair(max_x, intervals[0].second);
-    l_y = std::make_pair(intervals[1].first, intervals[1].second);
-    r_y = std::make_pair(intervals[1].first, intervals[1].second);
-  } else {
-    auto max_y = (intervals[1].first + intervals[1].second) / 2;
-    l_x = std::make_pair(intervals[0].first, intervals[0].second);
-    r_x = std::make_pair(intervals[0].first, intervals[0].second);
-    l_y = std::make_pair(intervals[1].first, max_y);
-    r_y = std::make_pair(max_y, intervals[1].second);
-  }
+  size_t max_idx = 0;
+  auto max = std::numeric_limits<T>::min();
+  for (size_t i = 0; i < intervals.size(); ++i)
+    if (intervals[i].second - intervals[i].first > max)
+      max_idx = i;
 
   auto v1 = std::vector<std::pair<T, T>>();
   auto v2 = std::vector<std::pair<T, T>>();
-  v1.push_back(l_x);
-  v1.push_back(l_y);
-  v2.push_back(r_x);
-  v2.push_back(r_y);
+  auto new_max = (intervals[max_idx].first + intervals[max_idx].second) / 2;
+
+  for (size_t i = 0; i < intervals.size(); ++i)
+    if (i != max_idx) {
+      v1.push_back(intervals[i]);
+      v2.push_back(intervals[i]);
+    } else {
+      v1.push_back(std::make_pair(intervals[i].first, new_max));
+      v2.push_back(std::make_pair(new_max, intervals[i].second));
+    }
 
   return std::make_pair(HyperRect(v1), HyperRect(v2));
 }
 
 template <typename T>
-bool HyperRect<T>::is_in(const Point<T>& p) {
+bool HyperRect<T>::is_in(const Point<T>& p) const {
   auto dim_x = intervals[0];
   auto dim_y = intervals[1];
   return (p.x >= dim_x.first && p.x <= dim_x.second)
@@ -77,6 +66,8 @@ bool HyperRect<T>::is_in(const Point<T>& p) {
 template <typename T>
 tree_ptr<T> WSPD::split_tree(const std::vector<Point<T>>& s) {
   HyperRect<T> rect(s);
+  if (s.size() == 0)
+    return tree_ptr<T>(nullptr);
   if (s.size() == 1)
     return tree_ptr<T>(new Tree<Point<T>, T>(s[0], rect));
   auto pr = rect.split();
@@ -87,7 +78,7 @@ tree_ptr<T> WSPD::split_tree(const std::vector<Point<T>>& s) {
   for (const auto p : s)
     if (rect_left.is_in(p))
       left.push_back(p);
-    else if (rect_right.is_in(p))
+    else
       right.push_back(p);
 
   auto tree = new Tree<Point<T>, T>(left[0] /* unused */, rect);

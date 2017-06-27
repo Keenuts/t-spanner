@@ -18,7 +18,7 @@ struct HyperRect {
   HyperRect<T>(const std::vector<std::pair<T, T>>& i) : intervals(i) {}
   HyperRect<T>(const std::vector<Point<T>>& s);
 
-  bool is_in(const Point<T>& p);
+  bool is_in(const Point<T>& p) const;
   std::pair<HyperRect<T>, HyperRect<T>> split() const;
 };
 

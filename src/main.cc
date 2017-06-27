@@ -8,6 +8,7 @@
 #include "wspd.hh"
 
 int main(int argc, char** argv) {
+#if 0
   int res;
   struct graph_t graph, output;
   std::memset(&graph, 0, sizeof(struct graph_t));
@@ -39,18 +40,19 @@ int main(int argc, char** argv) {
   if (res)
     return res;
   return 0;
-#if 0
+#endif
   (void)argc;
   (void)argv;
-  Point<int> p(0, 1);
-  Point<int> p1(1,1);
+  Point<double> p(0.0, 1.0);
+  Point<double> p1(1.0, 1.0);
+  Point<double> p2(1.0, 3.0);
 
-  std::vector<Point<int>> v;
+  std::vector<Point<double>> v;
   v.push_back(p);
   v.push_back(p1);
+  v.push_back(p2);
 
   WSPD wpsd;
-  auto test = wpsd.split_tree<int>(v);
+  auto test = wpsd.split_tree<double>(v);
   std::cout << "hello" << std::endl;
-#endif
 };
