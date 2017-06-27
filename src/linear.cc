@@ -58,14 +58,18 @@ int greedy_linear(struct graph_t *graph, struct graph_t *output, float t)
   for (struct edge_t e : edges_a) {
     float len = path_length(edges_b, graph->k, e.a, e.b);
     float d = t * node_distance(graph->nodes[e.a], graph->nodes[e.b]);
-    if (len > d)
+    if (len > d) {
       edges_b.push_back(e);
+    }
   }
 
   output->k = count_nodes(edges_b);
   output->edge_nbr = edges_b.size();
   output->edges = new struct edge_t[edges_b.size()];
   std::memcpy(output->edges, edges_b.data(), sizeof(struct edge_t) * edges_b.size());
+
+  output->nodes = new struct node_t[graph->k];
+  std::memcpy(output->nodes, graph->nodes, sizeof(struct node_t) * graph->k);
 
   return STATUS_SUCCESS;
 }

@@ -12,4 +12,4 @@ This is a school assignment.
 - [X] Greedy T-spanner
 - [ ] C++ // Using Well seperated pair decomposition
 - [ ] // algo using OpenCL
-- [-] Python bindings
+- [X] Python bindings

@@ -9,12 +9,11 @@
 #include "types.h"
 #include "wspd.hh"
 
-static int compute_greedy(const char *input_file, const char *output_file)
+static int compute_linear_greedy(const char* input_file, struct graph_t *out, float t)
 {
   int res;
-  struct graph_t graph, output;
+  struct graph_t graph;
   std::memset(&graph, 0, sizeof(struct graph_t));
-  std::memset(&output, 0, sizeof(struct graph_t));
 
   res = load_graph(input_file, &graph);
   if (res) {
@@ -22,7 +21,16 @@ static int compute_greedy(const char *input_file, const char *output_file)
     return res;
   }
 
-  res = greedy_linear(&graph, &output, 5);
+  return greedy_linear(&graph, out, t);
+}
+
+static int greedy_file(const char *input_file, const char *output_file, float t)
+{
+  int res;
+  struct graph_t output;
+  std::memset(&output, 0, sizeof(struct graph_t));
+
+  res = compute_linear_greedy(input_file, &output, t);
   if (res) {
     printf("[!] Greedy (linear) returned with error 0x%x\n", res);
     return res;
@@ -30,23 +38,64 @@ static int compute_greedy(const char *input_file, const char *output_file)
 
   printf("[*] Output graph has %u nodes.\n", output.k);
   printf("[*] Output graph has %u edges.\n", output.edge_nbr);
+  return output_graph(&output, output_file);
+}
 
-  res = output_graph(&output, output_file);
-  if (res)
-    return res;
-  return 0;
+PyObject* greedy_object(const char *input_file, float t)
+{
+  int res;
+  struct graph_t output;
+  std::memset(&output, 0, sizeof(struct graph_t));
+
+  res = compute_linear_greedy(input_file, &output, t);
+  if (res) {
+    printf("[!] Greedy (linear) returned with error 0x%x\n", res);
+    //FIXME: Python needs error setting
+    return NULL;
+  }
+
+  PyObject *nodes = PyList_New(output.k);
+
+  for (uint32_t i = 0; i < output.k; i++) {
+    PyObject *t = PyTuple_New(3);
+    PyTuple_SetItem(t, 0, PyLong_FromLong(output.nodes[i].id));
+    PyTuple_SetItem(t, 1, PyLong_FromLong(output.nodes[i].x));
+    PyTuple_SetItem(t, 2, PyLong_FromLong(output.nodes[i].y));
+    PyList_SET_ITEM(nodes, i, t);
+  }
+
+  PyObject *edges = PyList_New(output.edge_nbr);
+  for (uint32_t i = 0; i < output.edge_nbr; i++) {
+    PyObject *e = PyTuple_New(3);
+    PyTuple_SetItem(e, 0, PyLong_FromLong(output.edges[i].a));
+    PyTuple_SetItem(e, 1, PyLong_FromLong(output.edges[i].b));
+    PyTuple_SetItem(e, 2, PyFloat_FromDouble(output.edges[i].w));
+    PyList_SET_ITEM(edges, i, e);
+  }
+
+  PyObject *tuple = PyTuple_New(4);
+  PyTuple_SetItem(tuple, 0, PyLong_FromLong(output.k));
+  PyTuple_SetItem(tuple, 1, nodes);
+  PyTuple_SetItem(tuple, 2, PyLong_FromLong(output.edge_nbr));
+  PyTuple_SetItem(tuple, 3, edges);
+
+  return tuple;
 }
 
 static PyObject* tspanner_greedy(PyObject *self, PyObject *args)
 {
-  const char *input_file;
-  const char *output_file;
+  float t = 0.0f;
+  const char *input_file = NULL;
+  const char *output_file = NULL;
+  (void)self;
 
-  if (!PyArg_ParseTuple(args, "ss", &input_file, &output_file))
+  if (!PyArg_ParseTuple(args, "fs|s", &t, &input_file, &output_file))
       return NULL;
 
-  (void)self;
-  return PyLong_FromLong(compute_greedy(input_file, output_file));
+  if (output_file)
+    return PyLong_FromLong(greedy_file(input_file, output_file, t));
+  else
+    return greedy_object(input_file, t);
 }
 
 static PyMethodDef tspanner_methods[] = {
