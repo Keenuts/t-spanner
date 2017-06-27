@@ -5,6 +5,7 @@
 #include "linear.h"
 #include "messages.h"
 #include "types.h"
+#include "wspd.hh"
 
 int main(int argc, char** argv) {
   int res;
@@ -34,8 +35,22 @@ int main(int argc, char** argv) {
 
   printf("[*] Output graph has %u nodes.\n", output.k);
   printf("[*] Output graph has %u edges.\n", output.edge_nbr);
-  res = output_graph(&output, argv[2]); 
+  res = output_graph(&output, argv[2]);
   if (res)
     return res;
   return 0;
+#if 0
+  (void)argc;
+  (void)argv;
+  Point<int> p(0, 1);
+  Point<int> p1(1,1);
+
+  std::vector<Point<int>> v;
+  v.push_back(p);
+  v.push_back(p1);
+
+  WSPD wpsd;
+  auto test = wpsd.split_tree<int>(v);
+  std::cout << "hello" << std::endl;
+#endif
 };
