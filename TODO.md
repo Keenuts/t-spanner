@@ -1,7 +1,7 @@
-- [X] Input parsing
-- [X] Output dot
-- [X] Dijkstra
-- [X] Implement c++ simple greedy spanner
-- [ ] Cleanup
-- [ ] Implement C++ pair decomposition spanner
-- [ ] Implement GPU pair decomposition spanner
+- [X] Input parsing [**DONE**]
+- [X] Output dot [**DONE**]
+- [X] Dijkstra [**DONE**]
+- [X] Implement c++ simple greedy spanner [**DONE**]
+- [ ] Cleanup [**ONGOING**]
+- [ ] Implement C++ pair decomposition spanner [**NOT DONE**]
+- [ ] Implement GPU pair decomposition spanner [**NOT DONE**]

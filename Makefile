@@ -18,3 +18,6 @@ standalone: $(OBJ)
 
 clean:
 	$(RM) spanner.so standalone $(OBJ) output.png
+
+proper:
+	$(RM) $(OBJ)
