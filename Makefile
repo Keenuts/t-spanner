@@ -18,3 +18,6 @@ standalone: $(OBJ)
 
 clean:
 	$(RM) tspanner.so standalone $(OBJ) output.png
+
+proper:
+	$(RM) $(OBJ)
