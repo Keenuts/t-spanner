@@ -29,7 +29,6 @@ HyperRect<T>::HyperRect(const std::vector<Point<T>>& s) {
   intervals.push_back(range_y);
 }
 
-/* Only work in 2D */
 /* Split rectangle on maximum dimension */
 template <typename T>
 std::pair<HyperRect<T>, HyperRect<T>> HyperRect<T>::split() const {
@@ -64,17 +63,32 @@ bool HyperRect<T>::is_in(const Point<T>& p) const {
 }
 
 template <typename T>
+Sphere<T>::Sphere(const HyperRect<T>& rect) {
+  Point<T> up_left(rect.intervals[0].first, rect.intervals[1].second);
+  Point<T> down_right(rect.intervals[1].first, rect.intervals[0].second);
+
+  if (down_right.y - down_right.x == 0)
+    down_right.y = 0;
+  this->center = Point<T>((up_left.x + down_right.x) / 2,
+			  (up_left.y + down_right.y) / 2);
+  this->rayon = up_left.euclidean_distance(this->center);
+}
+
+template <typename T>
 tree_ptr<T> WSPD::split_tree(const std::vector<Point<T>>& s) {
-  HyperRect<T> rect(s);
   if (s.size() == 0)
     return tree_ptr<T>(nullptr);
+
+  HyperRect<T> rect(s);	/* box that contains all points */
   if (s.size() == 1)
     return tree_ptr<T>(new Tree<Point<T>, T>(s[0], rect));
+
   auto pr = rect.split();
   auto rect_left = pr.first;
   auto rect_right = pr.second;
   auto left = std::vector<Point<T>>();
   auto right = std::vector<Point<T>>();
+
   for (const auto p : s)
     if (rect_left.is_in(p))
       left.push_back(p);
