@@ -45,17 +45,13 @@ int main(int argc, char** argv) {
   (void)argv;
   Point<double> p(0.0, 1.0);
   Point<double> p1(1.0, 1.0);
-  //Point<double> p2(1.0, 3.0);
 
   std::vector<Point<double>> v;
   v.push_back(p);
   v.push_back(p1);
-  //v.push_back(p2);
 
-  WSPD wpsd;
-  auto test = wpsd.split_tree<double>(v);
-  Sphere<double> s (test->box);
-  std::cout << "Center: " << s.center << std::endl;
-  std::cout << "Radius:" << s.rayon << std::endl;
+  WSPD<double> wspd(v, 4.0);
+  auto res = wspd.compute();
+  std::cout << res.size() << std::endl;
   std::cout << "hello" << std::endl;
 };

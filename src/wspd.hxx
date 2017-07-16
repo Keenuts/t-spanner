@@ -1,7 +1,9 @@
 #pragma once
+#include <queue>
 
 template <typename T>
-HyperRect<T>::HyperRect(const std::vector<Point<T>>& s) {
+HyperRect<T>::HyperRect(const std::vector<Point<T>>& s)
+{
   if (s.size() == 1) {
     /* HyperRect has no meaning if sz == 1 it's a leaf */
     intervals.push_back(std::make_pair(s[0].x, s[0].y));
@@ -31,7 +33,8 @@ HyperRect<T>::HyperRect(const std::vector<Point<T>>& s) {
 
 /* Split rectangle on maximum dimension */
 template <typename T>
-std::pair<HyperRect<T>, HyperRect<T>> HyperRect<T>::split() const {
+std::pair<HyperRect<T>, HyperRect<T>> HyperRect<T>::split() const
+{
   size_t max_idx = 0;
   auto max = std::numeric_limits<T>::min();
   for (size_t i = 0; i < intervals.size(); ++i)
@@ -55,7 +58,8 @@ std::pair<HyperRect<T>, HyperRect<T>> HyperRect<T>::split() const {
 }
 
 template <typename T>
-bool HyperRect<T>::is_in(const Point<T>& p) const {
+bool HyperRect<T>::is_in(const Point<T>& p) const
+{
   auto dim_x = intervals[0];
   auto dim_y = intervals[1];
   return (p.x >= dim_x.first && p.x <= dim_x.second)
@@ -63,7 +67,20 @@ bool HyperRect<T>::is_in(const Point<T>& p) const {
 }
 
 template <typename T>
-Sphere<T>::Sphere(const HyperRect<T>& rect) {
+T HyperRect<T>::max_dim() const
+{
+  auto max = std::numeric_limits<T>::min();
+  for (const auto pr : this->intervals) {
+    T dist = pr.second - pr.first;
+    if (dist > max)
+      max = dist;
+  }
+  return max;
+}
+
+template <typename T>
+Sphere<T>::Sphere(const HyperRect<T>& rect)
+{
   Point<T> up_left(rect.intervals[0].first, rect.intervals[1].second);
   Point<T> down_right(rect.intervals[1].first, rect.intervals[0].second);
 
@@ -71,11 +88,30 @@ Sphere<T>::Sphere(const HyperRect<T>& rect) {
     down_right.y = 0;
   this->center = Point<T>((up_left.x + down_right.x) / 2,
 			  (up_left.y + down_right.y) / 2);
-  this->rayon = up_left.euclidean_distance(this->center);
+  this->radius = up_left.euclidean_distance(this->center);
 }
 
 template <typename T>
-tree_ptr<T> WSPD::split_tree(const std::vector<Point<T>>& s) {
+double Sphere<T>::min_dist(const Sphere<T>& s) const
+{
+  return this->center.euclidean_distance(s.center) - (this->radius + s.radius);
+}
+
+template <typename T>
+bool HyperRect<T>::is_well_separated(const HyperRect<T>& rhs, double stretch)
+{
+  Sphere<T> s1(*this);
+  Sphere<T> s2(rhs);
+  if (s1.radius > s2.radius)
+    s2.radius = s1.radius;
+  else
+    s1.radius = s2.radius;
+  return s1.min_dist(s2) >= stretch * s1.radius;
+}
+
+template <typename T>
+tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s) const
+{
   if (s.size() == 0)
     return tree_ptr<T>(nullptr);
 
@@ -100,4 +136,46 @@ tree_ptr<T> WSPD::split_tree(const std::vector<Point<T>>& s) {
   tree->r = split_tree(right);
 
   return tree_ptr<T>(tree);
+}
+
+template <typename T>
+void WSPD<T>::find_pairs(const tree_ptr<T>& l, const tree_ptr<T>& r,
+			 std::vector<ws_pair<T>>& res)
+const
+{
+  if (l == nullptr || r == nullptr)
+    return;
+  if (l->box.is_well_separated(r->box, this->stretch)) {
+    res.push_back(std::make_pair(l, r));
+    return;
+  }
+  if (l->box.max_dim() <= r->box.max_dim()) {
+    find_pairs(l, r->l, res);
+    find_pairs(l, r->r, res);
+  } else {
+    find_pairs(l->l, r, res);
+    find_pairs(l->r, r, res);
+  }
+}
+
+template <typename T>
+void WSPD<T>::compute_rec(const tree_ptr<T>& u, std::vector<ws_pair<T>>& res)
+const
+{
+  if (u->l == u->r) // leaf
+    return;
+  auto v = u->l;
+  auto w = u->r;
+  this->find_pairs(v, w, res);
+  this->compute_rec(v, res);
+  this->compute_rec(w, res);
+}
+
+template <typename T>
+std::vector<ws_pair<T>> WSPD<T>::compute() const
+{
+  auto tree = this->split_tree(this->points);
+  std::vector<ws_pair<T>> res;
+  this->compute_rec(tree, res);
+  return res;
 }

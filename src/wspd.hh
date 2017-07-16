@@ -28,7 +28,9 @@ struct HyperRect {
   HyperRect<T>(const std::vector<Point<T>>& s);
 
   bool is_in(const Point<T>& p) const;
+  bool is_well_separated(const HyperRect<T>& rhs, double stretch);
   std::pair<HyperRect<T>, HyperRect<T>> split() const;
+  T max_dim() const;
 };
 
 template <typename T, typename U = T>
@@ -50,17 +52,44 @@ struct Tree {
 template <typename T>
 struct Sphere {
   Point<T> center;
-  T rayon;
+  T radius;
   Sphere<T>(const HyperRect<T>& rect);
+  double min_dist(const Sphere<T>& s) const;
+  friend std::ostream& operator<<(std::ostream& os, const Sphere<T>& rhs) {
+    os << "Center: " << rhs.center << std::endl;
+    os << "Radius: " << rhs.radius << std::endl;
+    return os;
+  }
 };
 
 template <typename T>
 using tree_ptr = std::shared_ptr<Tree<Point<T>, T>>;
 
+template <typename T>
+using ws_pair = std::pair<tree_ptr<T>, tree_ptr<T>>;
+
+template <typename T>
 struct WSPD {
-  /* ... */
-  template <typename T>
-  tree_ptr<T> split_tree(const std::vector<Point<T>>& s);
+  std::vector<Point<T>> points;
+  double stretch;
+
+  WSPD<T>(const std::vector<Point<T>>& s, double _stretch) {
+    std::copy(s.begin(), s.end(), std::back_inserter(points));
+    stretch = _stretch;
+  }
+
+  std::vector<ws_pair<T>> compute() const;
+
+private:
+  tree_ptr<T> split_tree(const std::vector<Point<T>>& s) const;
+
+  void find_pairs(const tree_ptr<T>& l, const tree_ptr<T>& r,
+		   std::vector<ws_pair<T>>& res)
+  const;
+
+  void compute_rec(const tree_ptr<T>& u, std::vector<ws_pair<T>>& res) const;
+
+
 };
 
 #include "wspd.hxx"
