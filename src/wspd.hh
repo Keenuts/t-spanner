@@ -5,11 +5,15 @@
 #include <algorithm>
 #include <iostream>
 
+#include "types.h"
+
 template <typename T>
 struct Point {
   T x, y;
+  int id;
   Point() {}
-  Point(T _x, T _y) : x(_x), y(_y) {}
+  Point(T _x, T _y) : x(_x), y(_y), id(0) {}
+  Point(T _x, T _y, int _id) : x(_x), y(_y), id(_id) {}
   double euclidean_distance(const Point<T>& p) const {
     return std::sqrt(std::pow(p.x - x, 2.0) + std::pow(p.y - y, 2.0));
   }
@@ -91,5 +95,7 @@ private:
 
 
 };
+
+int wspd_linear(graph_t *graph, graph_t *output, float t);
 
 #include "wspd.hxx"

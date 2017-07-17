@@ -110,6 +110,19 @@ bool HyperRect<T>::is_well_separated(const HyperRect<T>& rhs, double stretch)
 }
 
 template <typename T>
+static inline void equalize_if_needed(std::vector<T>& a, std::vector<T>&b)
+{
+  auto a_sz = a.size();
+  auto b_sz = a.size();
+  if (a_sz == 2 && b_sz == 0) {
+    b.push_back(a.back());
+    a.pop_back();
+  } else if (a_sz == 0 && b_sz == 2) {
+    a.push_back(b.back());
+    b.pop_back();
+  }
+}
+template <typename T>
 tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s) const
 {
   if (s.size() == 0)
@@ -130,7 +143,7 @@ tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s) const
       left.push_back(p);
     else
       right.push_back(p);
-
+  equalize_if_needed(left, right);
   auto tree = new Tree<Point<T>, T>(left[0] /* unused */, rect);
   tree->l = split_tree(left);
   tree->r = split_tree(right);

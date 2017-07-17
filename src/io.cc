@@ -41,11 +41,7 @@ static int parse_file(
       return STATUS_ERROR_PARSING_INCOMPLETE;
     }
 
-    struct node_t node = {
-      .id = index,
-      .x = x,
-      .y = y,
-    };
+    node_t node(index, x, y);
 
     auto res = names.emplace(std::make_pair(name, node));
     if (res.second)
@@ -58,11 +54,7 @@ static int parse_file(
       if (a.second.id == b.second.id)
         continue;
 
-      struct edge_t e {
-        .a = a.second.id,
-        .b = b.second.id,
-        .w = node_distance(a.second, b.second),
-      };
+      edge_t e(a.second.id, b.second.id, node_distance(a.second, b.second));
       edges.push_back(e);
     }
   }

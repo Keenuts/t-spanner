@@ -7,8 +7,13 @@
 #include "types.h"
 #include "wspd.hh"
 
+static inline void delete_graph(graph_t *g)
+{
+  delete[] g->nodes;
+  delete[] g->edges;
+}
+
 int main(int argc, char** argv) {
-#if 0
   int res;
   struct graph_t graph, output;
   std::memset(&graph, 0, sizeof(struct graph_t));
@@ -28,7 +33,7 @@ int main(int argc, char** argv) {
   printf("[*] Input graph has %u nodes.\n", graph.k);
   printf("[*] Input graph has %u edges.\n", graph.edge_nbr);
 
-  res = greedy_linear(&graph, &output, 2);
+  res = wspd_linear(&graph, &output, 4.0);
   if (res) {
     printf("[!] Greedy (linear) returned with error 0x%x\n", res);
     return res;
@@ -37,10 +42,13 @@ int main(int argc, char** argv) {
   printf("[*] Output graph has %u nodes.\n", output.k);
   printf("[*] Output graph has %u edges.\n", output.edge_nbr);
   res = output_graph(&output, argv[2]);
+
+  delete_graph(&graph);
+  delete_graph(&output);
   if (res)
     return res;
   return 0;
-#endif
+#if 0
   (void)argc;
   (void)argv;
   Point<double> p(0.0, 1.0);
@@ -54,4 +62,5 @@ int main(int argc, char** argv) {
   auto res = wspd.compute();
   std::cout << res.size() << std::endl;
   std::cout << "hello" << std::endl;
+#endif
 };
