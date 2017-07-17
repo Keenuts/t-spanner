@@ -4,8 +4,7 @@
 #include "error.h"
 
 template <class Iterator, class _Point>
-auto vector_get(Iterator begin, Iterator end, const _Point& p)
--> decltype(begin)
+Iterator vector_get(Iterator begin, Iterator end, const _Point& p)
 {
   for (; begin != end; ++begin) {
     const auto elt = *begin;
@@ -24,8 +23,7 @@ auto add_node(std::vector<node_t>& nodes, const _Point& p, uint32_t& idx)
   if (it != nodes.end())
     return it;
   nodes.push_back(node_t(idx++, p.x, p.y));
-  auto debug = std::prev(nodes.end());
-  return debug;
+  return std::prev(nodes.end());
 }
 
 /* Graph<Point<float>> g;
