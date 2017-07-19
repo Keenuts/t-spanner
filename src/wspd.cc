@@ -46,7 +46,7 @@ static int fill_graph(graph_t *out, const Pairs& sep_pairs)
     auto a = add_node<decltype(p1)>(node_out, p1, index);
     auto id = a->id;
     auto b = add_node<decltype(p2)>(node_out, p2, index);
-    edge_out.push_back(edge_t(id, b->id, 0.0f));
+    edge_out.push_back(edge_t(id, b->id, p1.euclidean_distance(p2)));
   }
 
   out->k = node_out.size();

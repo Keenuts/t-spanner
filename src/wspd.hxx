@@ -11,7 +11,7 @@ HyperRect<T>::HyperRect(const std::vector<Point<T>>& s)
     return;
   }
 
-  const auto min = std::numeric_limits<T>::min();
+  const auto min = std::numeric_limits<T>::lowest();
   const auto max = std::numeric_limits<T>::max();
   std::pair<T, T> range_x(max, min);
   std::pair<T, T> range_y(max, min);
@@ -19,11 +19,11 @@ HyperRect<T>::HyperRect(const std::vector<Point<T>>& s)
   for (const auto p : s) {
     if (p.x < range_x.first)
       range_x.first = p.x;
-    else if (p.x > range_x.second)
+    if (p.x > range_x.second)
       range_x.second = p.x;
     if (p.y < range_y.first)
       range_y.first = p.y;
-    else if (p.y > range_y.second)
+    if (p.y > range_y.second)
       range_y.second = p.y;
   }
 
@@ -36,10 +36,12 @@ template <typename T>
 std::pair<HyperRect<T>, HyperRect<T>> HyperRect<T>::split() const
 {
   size_t max_idx = 0;
-  auto max = std::numeric_limits<T>::min();
+  auto max = std::numeric_limits<T>::lowest();
   for (size_t i = 0; i < intervals.size(); ++i)
-    if (intervals[i].second - intervals[i].first > max)
+    if (intervals[i].second - intervals[i].first > max) {
       max_idx = i;
+      max = intervals[i].second - intervals[i].first;
+    }
 
   auto v1 = std::vector<std::pair<T, T>>();
   auto v2 = std::vector<std::pair<T, T>>();
@@ -122,6 +124,7 @@ static inline void equalize_if_needed(std::vector<T>& a, std::vector<T>&b)
     b.pop_back();
   }
 }
+
 template <typename T>
 tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s) const
 {
@@ -143,8 +146,10 @@ tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s) const
       left.push_back(p);
     else
       right.push_back(p);
+
   equalize_if_needed(left, right);
-  auto tree = new Tree<Point<T>, T>(left[0] /* unused */, rect);
+  auto elt = s[std::rand() % (s.size() - 1)];
+  auto tree = new Tree<Point<T>, T>(elt /* unused */, rect);
   tree->l = split_tree(left);
   tree->r = split_tree(right);
 

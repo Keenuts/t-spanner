@@ -78,7 +78,7 @@ struct WSPD {
   double stretch;
 
   WSPD<T>(const std::vector<Point<T>>& s, double _stretch) {
-    std::copy(s.begin(), s.end(), std::back_inserter(points));
+    points = std::move(s);
     stretch = _stretch;
   }
 

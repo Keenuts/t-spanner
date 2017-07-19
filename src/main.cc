@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iostream>
+#include <cstdlib>
 
 #include "io.h"
 #include "linear.h"
@@ -33,7 +34,8 @@ int main(int argc, char** argv) {
   printf("[*] Input graph has %u nodes.\n", graph.k);
   printf("[*] Input graph has %u edges.\n", graph.edge_nbr);
 
-  res = wspd_linear(&graph, &output, 4.0);
+  res = wspd_linear(&graph, &output, 20.0 / 3.0);
+  //res = greedy_linear(&graph, &output, 4.0);
   if (res) {
     printf("[!] Greedy (linear) returned with error 0x%x\n", res);
     return res;
