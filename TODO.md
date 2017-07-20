@@ -2,8 +2,8 @@
 - [X] Output dot (Nathan)
 - [X] Dijkstra (Nathan)
 - [X] Implement c++ simple greedy spanner (Nathan)
-- [ ] Cleanup
-- [ ] Implement C++ pair decomposition spanner (Thomas)
+- [X] Cleanup
+- [X] Implement C++ pair decomposition spanner (Thomas)
 - [ ] Implement C++ Theta-graph (Paul)
 - [ ] Implement GPU pair decomposition spanner
 - [X] Basic Python module (calling functions from python (Nathan)

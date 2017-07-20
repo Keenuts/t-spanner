@@ -5,11 +5,11 @@ This is a school assignment.
 ## Required:
 
 - [X] Greedy T-spanner
-- [ ] C++ // T-spanner algorithm
+- [X] C++ // T-spanner algorithm
 
 ## Roadmap:
 
 - [X] Greedy T-spanner
-- [ ] C++ // Using Well seperated pair decomposition
-- [ ] // algo using OpenCL
+- [-] C++ // Using Well seperated pair decomposition
+- [-] // algo using OpenCL
 - [X] Python bindings
