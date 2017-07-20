@@ -5,7 +5,7 @@ LDLIBS=`pkg-config --libs $(LIBS)`
 
 VPATH=src
 
-OBJ=main.o io.o app.o linear.o pathfinding.o wspd.o
+OBJ=main.o io.o app.o linear.o pathfinding.o gpu.o wspd.o
 
 all: standalone
 

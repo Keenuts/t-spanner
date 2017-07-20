@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "gpu.h"
 #include "io.h"
 #include "linear.h"
 #include "messages.h"
@@ -14,7 +15,10 @@ static inline void delete_graph(graph_t *g)
   delete[] g->edges;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
+
+#if 0
   int res;
   struct graph_t graph, output;
   std::memset(&graph, 0, sizeof(struct graph_t));
@@ -50,6 +54,8 @@ int main(int argc, char** argv) {
   if (res)
     return res;
   return 0;
+#endif
+
 #if 0
   (void)argc;
   (void)argv;
@@ -65,4 +71,9 @@ int main(int argc, char** argv) {
   std::cout << res.size() << std::endl;
   std::cout << "hello" << std::endl;
 #endif
-};
+
+  (void)argc;
+  (void)argv;
+  return 0;
+}
+

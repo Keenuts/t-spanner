@@ -5,7 +5,6 @@
 - [ ] Cleanup
 - [ ] Implement C++ pair decomposition spanner (Thomas)
 - [ ] Implement C++ Theta-graph (Paul)
-- [ ] Implement GPU greedy spanner (Nathan)
 - [ ] Implement GPU pair decomposition spanner
 - [X] Basic Python module (calling functions from python (Nathan)
 - [X] Use our graph as input for NetworkX (Python) (Nathan)

@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 # Get graph in python
 graph = tspanner.compute_greedy(2.0, "inputs/complet.graph")
+graph = tspanner.compute_wspd(2.0, "inputs/complet.graph")
 
 G = nx.DiGraph()
 

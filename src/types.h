@@ -1,5 +1,6 @@
 #pragma once
 
+#include <CL/cl.hpp>
 #include <cmath>
 #include <sys/types.h>
 
@@ -22,4 +23,11 @@ struct graph_t {
   uint32_t k;
   struct node_t *nodes;
   struct edge_t *edges;
+};
+
+struct gpu_t {
+  cl::Context context;
+  cl::Device device;
+  cl::Platform platform;
+  cl::Program kernel;
 };
