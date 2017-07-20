@@ -1,6 +1,7 @@
 # [WIP] T-spanner
 
 This is a school assignment.
+Note: OpenCL kernel is just a dummy kernel for now.
 
 ## Required:
 
@@ -10,6 +11,6 @@ This is a school assignment.
 ## Roadmap:
 
 - [X] Greedy T-spanner
-- [-] C++ // Using Well seperated pair decomposition
-- [-] // algo using OpenCL
+- [ ] C++ // Using Well seperated pair decomposition
+- [ ] // algo using OpenCL
 - [X] Python bindings
