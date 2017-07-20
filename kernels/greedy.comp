@@ -1,0 +1,37 @@
+#define uint32_t unsigned int
+#define int32_t int
+
+struct gpu_settings_t {
+  int32_t per_ker_width;
+  uint32_t k;
+  uint32_t edge_nbr;
+};
+
+struct edge_t {
+  uint32_t a, b;
+  float w;
+};
+
+struct node_t {
+  int32_t id;
+  float x, y;
+};
+
+__kernel void greedy_tspanner(
+  float t,
+  __constant struct gpu_settings_t *p,
+  __read_only __global struct edge_t *edges,
+  __read_only __global struct node_t *nodes,
+  __write_only __global struct edge_t *output)
+{
+  const int32_t pos = get_global_id(0) * p->per_ker_width;
+
+  for (uint32_t i = 0; i < p->per_ker_width; i++) {
+    struct edge_t e;
+    e.a = edges[pos + i].a;
+    e.b = edges[pos + i].b;
+    e.w = edges[pos + i].w;
+
+    output[pos + i] = e;
+  }
+}
