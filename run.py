@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # tspanner.compute_greedy(1.0, "inputs/complet.graph", "output.dot")
 
 # Get graph in python
-graph = tspanner.compute_greedy(2.0, "inputs/complet.graph")
+# graph = tspanner.compute_greedy(1.0, "inputs/complet.graph")
 graph = tspanner.compute_wspd(2.0, "inputs/complet.graph")
 
 G = nx.DiGraph()
