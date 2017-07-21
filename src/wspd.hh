@@ -106,8 +106,8 @@ private:
 
 template <typename T>
 struct SplitTreeTask : tbb::task {
-  const std::vector<Point<T>>& s;
-  const HyperRect<T>& box;
+  const std::vector<Point<T>> s;
+  const HyperRect<T> box;
   tree_ptr<T>& u;
   std::atomic_ulong next;
 

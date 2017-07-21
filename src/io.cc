@@ -61,7 +61,6 @@ static int parse_file(
     }
   }
 #endif
-
   *k = index;
   return STATUS_SUCCESS;
 }
