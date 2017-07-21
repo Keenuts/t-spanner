@@ -49,10 +49,20 @@ static uint32_t count_nodes(std::vector<struct edge_t> &edges) {
 
 int greedy_linear(struct graph_t *graph, struct graph_t *output, float t)
 {
-  std::vector<struct edge_t> edges_a(graph->edge_nbr);
+  std::vector<struct edge_t> edges_a;
   std::vector<struct edge_t> edges_b;
 
-  std::memcpy(edges_a.data(), graph->edges, sizeof(struct edge_t) * graph->edge_nbr);
+  for (size_t i = 0; i < graph->k; ++i)
+    for (size_t j = 0; j < graph->k; ++j)
+      if (i == j)
+	continue;
+      else {
+	auto a = graph->nodes[i];
+	auto b = graph->nodes[j];
+	edge_t e(a.id, b.id, node_distance(a, b));
+	edges_a.push_back(e);
+      }
+
   sort(edges_a);
 
   for (struct edge_t e : edges_a) {

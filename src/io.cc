@@ -85,7 +85,7 @@ int load_graph(const char* path, struct graph_t *graph) {
   graph->edge_nbr = edges.size();
   graph->k = k;
   graph->nodes = new struct node_t[k];
-  graph->edges = new struct edge_t[edges.size()];
+  //graph->edges = new struct edge_t[edges.size()];
   //std::memcpy(graph->edges, edges.data(), edges.size() * sizeof(struct edge_t));
   std::memmove(graph->nodes, nodes.data(), nodes.size() * sizeof(struct node_t));
 
