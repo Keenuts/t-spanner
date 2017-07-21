@@ -76,8 +76,8 @@ int wspd_linear(graph_t *graph, graph_t *output, float t)
   }
 
   WSPD<float> wspd(points, t);
-  auto sep_pairs = wspd.compute_parallel_tree();
-  //auto sep_pairs = wspd.compute();
+  //auto sep_pairs = wspd.compute_parallel_tree();
+  auto sep_pairs = wspd.compute();
 
   return fill_graph<decltype(sep_pairs)>(output, sep_pairs);
 }

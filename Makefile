@@ -7,7 +7,7 @@ VPATH=src
 
 OBJ=main.o io.o app.o linear.o pathfinding.o gpu.o wspd.o
 
-all: standalone
+#all: standalone
 
 libpython: CXXFLAGS+=-fPIC
 libpython: $(OBJ)

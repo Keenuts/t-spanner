@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 # Get graph in python
 # graph = tspanner.compute_greedy(1.0, "inputs/complet.graph")
-graph = tspanner.compute_wspd(2.0, "inputs/complet.graph")
+graph = tspanner.compute_wspd(2.0, "inputs/city.txt")
 
 G = nx.DiGraph()
 

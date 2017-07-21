@@ -51,7 +51,8 @@ static int compute_linear(const char* input_file, struct graph_t *out, float t, 
   if (res)
     return res;
 
-  return func(&graph, out, t);
+  res = func(&graph, out, t);
+  return res;
 }
 
 template <typename F>

@@ -38,8 +38,8 @@ int main(int argc, char** argv)
   printf("[*] Input graph has %u edges.\n", graph.edge_nbr);
 
   tbb::tick_count t0 = tbb::tick_count::now();
-  //res = wspd_linear(&graph, &output, 20.0 / 3.0);
-  res = greedy_linear(&graph, &output, 4.0);
+  res = wspd_linear(&graph, &output, 20.0 / 3.0);
+  //res = greedy_linear(&graph, &output, 4.0);
   tbb::tick_count t1 = tbb::tick_count::now();
   std::cout << (t1 - t0).seconds() << " s" << std::endl;
   if (res) {

@@ -51,7 +51,7 @@ int greedy_linear(struct graph_t *graph, struct graph_t *output, float t)
 {
   std::vector<struct edge_t> edges_a;
   std::vector<struct edge_t> edges_b;
-
+  printf("%p\n", graph);
   for (size_t i = 0; i < graph->k; ++i)
     for (size_t j = 0; j < graph->k; ++j)
       if (i == j)
@@ -63,6 +63,7 @@ int greedy_linear(struct graph_t *graph, struct graph_t *output, float t)
 	edges_a.push_back(e);
       }
 
+  std::cout << "done" << std::endl;
   sort(edges_a);
 
   for (struct edge_t e : edges_a) {
@@ -72,6 +73,7 @@ int greedy_linear(struct graph_t *graph, struct graph_t *output, float t)
       edges_b.push_back(e);
     }
   }
+  std::cout << "compute done" << std::endl;
 
   output->k = count_nodes(edges_b);
   output->edge_nbr = edges_b.size();
