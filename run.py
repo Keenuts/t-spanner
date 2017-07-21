@@ -11,8 +11,9 @@ import matplotlib.pyplot as plt
 # tspanner.compute_greedy(1.0, "inputs/complet.graph", "output.dot")
 
 # Get graph in python
-# graph = tspanner.compute_greedy(6.0, "inputs/us_250.graph")
-graph = tspanner.compute_wspd_parallel(1.5, "inputs/us_250.graph")
+# graph = tspanner.compute_greedy(1.2, "inputs/us_250.graph")
+# graph = tspanner.compute_wspd(1.2, "inputs/toto.graph")
+graph = tspanner.compute_wspd_parallel(1.2, "inputs/toto.graph")
 
 print("Graph computations done.")
 G = nx.DiGraph()
