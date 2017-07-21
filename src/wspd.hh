@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <tbb/tbb.h>
+#include <atomic>
 
 #include "types.h"
 
@@ -31,6 +33,10 @@ struct HyperRect {
   HyperRect<T>(const std::vector<std::pair<T, T>>& i) : intervals(i) {}
   HyperRect<T>(const std::vector<Point<T>>& s);
   HyperRect<T>(const std::vector<Point<T>>& s, const HyperRect<T>& rhs);
+  HyperRect<T>(const HyperRect<T>& rhs) {
+    std::copy(rhs.intervals.begin(), rhs.intervals.end(),
+	      std::back_inserter(intervals));
+  }
 
   bool is_in(const Point<T>& p) const;
   bool is_well_separated(const HyperRect<T>& rhs, double stretch);
@@ -84,6 +90,7 @@ struct WSPD {
   }
 
   std::vector<ws_pair<T>> compute() const;
+  std::vector<ws_pair<T>> compute_parallel_tree() const;
 
 private:
   tree_ptr<T> split_tree(const std::vector<Point<T>>& s, const HyperRect<T>& box) const;
@@ -95,6 +102,21 @@ private:
   void compute_rec(const tree_ptr<T>& u, std::vector<ws_pair<T>>& res) const;
 
 
+};
+
+template <typename T>
+struct SplitTreeTask : tbb::task {
+  const std::vector<Point<T>>& s;
+  const HyperRect<T>& box;
+  tree_ptr<T>& u;
+  std::atomic_ulong next;
+
+  SplitTreeTask<T>(const std::vector<Point<T>>& _s, const HyperRect<T>& _box,
+		   tree_ptr<T>& _u, long unsigned int n)
+  : s(_s), box(_box), u(_u), next(n)
+  {}
+
+  virtual tbb::task* execute();
 };
 
 int wspd_linear(graph_t *graph, graph_t *output, float t);

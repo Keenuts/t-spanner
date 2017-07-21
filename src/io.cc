@@ -10,7 +10,7 @@
 #include "error.h"
 #include "types.h"
 
-static float node_distance(struct node_t a, struct node_t b)
+float node_distance(struct node_t a, struct node_t b)
 {
   return std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2));
 }
@@ -22,7 +22,7 @@ static int parse_file(
   uint32_t *k
   )
 {
-  std::map<std::string, struct node_t> names;
+  //std::map<std::string, struct node_t> names;
   uint32_t index = 0;
 
   for (uint32_t line = 0; !in.eof(); line++) {
@@ -42,12 +42,14 @@ static int parse_file(
     }
 
     node_t node(index, x, y);
+    nodes.push_back(node);
 
-    auto res = names.emplace(std::make_pair(name, node));
-    if (res.second)
+    //auto res = names.emplace(std::make_pair(name, node));
+    //if (res.second)
       index++;
   }
-
+  (void)edges;
+#if 0
   for (const auto &a : names) {
     nodes.push_back(a.second);
     for (const auto &b : names) {
@@ -58,6 +60,7 @@ static int parse_file(
       edges.push_back(e);
     }
   }
+#endif
 
   *k = index;
   return STATUS_SUCCESS;
@@ -83,8 +86,8 @@ int load_graph(const char* path, struct graph_t *graph) {
   graph->k = k;
   graph->nodes = new struct node_t[k];
   graph->edges = new struct edge_t[edges.size()];
-  std::memcpy(graph->edges, edges.data(), edges.size() * sizeof(struct edge_t));
-  std::memcpy(graph->nodes, nodes.data(), nodes.size() * sizeof(struct node_t));
+  //std::memcpy(graph->edges, edges.data(), edges.size() * sizeof(struct edge_t));
+  std::memmove(graph->nodes, nodes.data(), nodes.size() * sizeof(struct node_t));
 
   printf("[*] Loading a graph with %u edges.\n", graph->edge_nbr);
   return STATUS_SUCCESS;

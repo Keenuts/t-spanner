@@ -18,7 +18,6 @@ static inline void delete_graph(graph_t *g)
 int main(int argc, char** argv)
 {
 
-#if 0
   int res;
   struct graph_t graph, output;
   std::memset(&graph, 0, sizeof(struct graph_t));
@@ -38,7 +37,10 @@ int main(int argc, char** argv)
   printf("[*] Input graph has %u nodes.\n", graph.k);
   printf("[*] Input graph has %u edges.\n", graph.edge_nbr);
 
+  tbb::tick_count t0 = tbb::tick_count::now();
   res = wspd_linear(&graph, &output, 20.0 / 3.0);
+  tbb::tick_count t1 = tbb::tick_count::now();
+  std::cout << (t1 - t0).seconds() << " s" << std::endl;
   //res = greedy_linear(&graph, &output, 4.0);
   if (res) {
     printf("[!] Greedy (linear) returned with error 0x%x\n", res);
@@ -54,23 +56,6 @@ int main(int argc, char** argv)
   if (res)
     return res;
   return 0;
-#endif
-
-#if 0
-  (void)argc;
-  (void)argv;
-  Point<double> p(0.0, 1.0);
-  Point<double> p1(1.0, 1.0);
-
-  std::vector<Point<double>> v;
-  v.push_back(p);
-  v.push_back(p1);
-
-  WSPD<double> wspd(v, 4.0);
-  auto res = wspd.compute();
-  std::cout << res.size() << std::endl;
-  std::cout << "hello" << std::endl;
-#endif
 
   (void)argc;
   (void)argv;

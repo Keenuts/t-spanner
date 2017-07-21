@@ -175,9 +175,8 @@ tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s,
     else
       right.push_back(p);
 
-  //equalize_if_needed(left, right);
   auto elt = s[std::rand() % (s.size() - 1)];
-  auto tree = new Tree<Point<T>, T>(elt /* unused */, rect);
+  auto tree = new Tree<Point<T>, T>(elt, rect);
   tree->l = split_tree(left, rect_left);
   tree->r = split_tree(right, rect_right);
 
@@ -223,6 +222,60 @@ template <typename T>
 std::vector<ws_pair<T>> WSPD<T>::compute() const
 {
   auto tree = this->split_tree(this->points, HyperRect<T>(this->points));
+  std::vector<ws_pair<T>> res;
+  this->compute_rec(tree, res);
+  return res;
+}
+
+/* Parallel implems, maybe move to another file */
+template <typename T>
+tbb::task* SplitTreeTask<T>::execute()
+{
+  if (s.size() == 0) {
+    u = tree_ptr<T>(nullptr);
+    return NULL;
+  }
+
+  if (s.size() == 1) {
+    u = tree_ptr<T>(new Tree<Point<T>, T>(s[0], box));
+    return NULL;
+  }
+
+  HyperRect<T> rect(s, box);
+  auto pr = rect.split();
+  auto rect_left = pr.first;
+  auto rect_right = pr.second;
+  auto left = std::vector<Point<T>>();
+  auto right = std::vector<Point<T>>();
+
+  for (const auto p : s)
+    if (rect_left.is_in(p))
+      left.push_back(p);
+    else
+      right.push_back(p);
+  auto elt = s[next++ % (s.size() - 1)];
+  u = tree_ptr<T>(new Tree<Point<T>, T>(elt, rect));
+
+  set_ref_count(3);
+  auto& task_l = *new(allocate_child()) SplitTreeTask<T>(left, rect_left,
+							      u->l, next);
+  auto& task_r = *new(allocate_child()) SplitTreeTask<T>(right, rect_right,
+							      u->r, next);
+  spawn(task_l);
+  spawn_and_wait_for_all(task_r);
+
+  return NULL;
+}
+
+template <typename T>
+std::vector<ws_pair<T>> WSPD<T>::compute_parallel_tree() const
+{
+  tree_ptr<T> tree(nullptr);
+  std::atomic_ulong n(0);
+  tbb::task& task = *new(tbb::task::allocate_root()) SplitTreeTask<T>(this->points,
+					HyperRect<T>(this->points),
+				        tree, 0);
+  tbb::task::spawn_root_and_wait(task);
   std::vector<ws_pair<T>> res;
   this->compute_rec(tree, res);
   return res;
