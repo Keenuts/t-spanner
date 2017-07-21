@@ -240,7 +240,6 @@ tbb::task* SplitTreeTask<T>::execute()
     u = tree_ptr<T>(new Tree<Point<T>, T>(s[0], box));
     return NULL;
   }
-  std::cout << s.size() << std::endl;
   HyperRect<T> rect(s, box);
   auto pr = rect.split();
   auto rect_left = pr.first;
