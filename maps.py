@@ -14,16 +14,28 @@ def get_location(city):
     obj = res.json()
     return obj['results'][0]['geometry']['location']
 
+def get_next_str(string):
+    if len(string) == 0:
+        return 'A'
+    c = string[-1]
+    if ord(c) >= ord('Z'):
+        string = get_next_str(string[:-1]) + 'A'
+    else:
+        string = string[:-1] + chr(ord(c) + 1)
+    return string
+
 def get_graph(filename, out):
     f = open(filename, "r")
     o = open(out, "w+")
     count = 0
+    uniq = "A"
     for line in f:
         if count % 100 == 0:
             time.sleep(5)
         loc = get_location(line)
-        o.write(line[:-1] + " " + str(loc['lat']) + " " + str(loc['lng']) + "\n")
+        o.write(uniq + " " + str(loc['lng']) + " " + str(loc['lat']) + "\n")
         count += 1
+        uniq = get_next_str(uniq)
 
 if __name__ == "__main__":
     if (sys.argv[1] and sys.argv[2]):
