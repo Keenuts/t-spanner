@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall -Wextra -Werror -g -std=c++14 `pkg-config --cflags $(LIBS)`
+CXXFLAGS=-Wall -Wextra -Werror -g -std=c++14 `pkg-config --cflags $(LIBS)` -O3
 
 LIBS=OpenCL python3
 LDLIBS=`pkg-config --libs $(LIBS)` -ltbb
