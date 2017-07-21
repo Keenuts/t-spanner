@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 # Get graph in python
 # graph = tspanner.compute_greedy(6.0, "inputs/us_250.graph")
-graph = tspanner.compute_wspd(1.5, "inputs/us_250.graph")
+graph = tspanner.compute_wspd_parallel(1.5, "inputs/us_250.graph")
 
 print("Graph computations done.")
 G = nx.DiGraph()

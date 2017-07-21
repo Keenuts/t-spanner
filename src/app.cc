@@ -107,10 +107,12 @@ PyObject* tspanner_ ## Name(PyObject *self, PyObject *args)                     
 
 PY_WRAPPER(greedy, greedy_linear)
 PY_WRAPPER(wspd, wspd_linear)
+PY_WRAPPER(wspd_para, wspd_parallel);
 
 static PyMethodDef tspanner_methods[] = {
   { "compute_greedy", tspanner_greedy, METH_VARARGS, "Linear greedy algorithm" },
   { "compute_wspd", tspanner_wspd, METH_VARARGS, "Linear WSPD algorithm" },
+  { "compute_wspd_parallel", tspanner_wspd_para, METH_VARARGS, "Parallel WSPD algorithm" },
   { NULL, NULL, 0, NULL }
 };
 

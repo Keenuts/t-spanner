@@ -76,8 +76,24 @@ int wspd_linear(graph_t *graph, graph_t *output, float t)
   }
 
   WSPD<float> wspd(points, t);
-  auto sep_pairs = wspd.compute_parallel_tree();
-  //auto sep_pairs = wspd.compute();
+  auto sep_pairs = wspd.compute();
 
   return fill_graph<decltype(sep_pairs)>(output, sep_pairs);
+}
+
+int wspd_parallel(graph_t *graph, graph_t *output, float t)
+{
+  std::vector<Point<float>> points;
+
+  for (size_t i = 0; i < graph->k; ++i) {
+    node_t p = graph->nodes[i];
+    auto it = vector_get(points.begin(), points.end(), p);
+    if (it == points.end())
+      points.emplace_back(Point<float>(p.x, p.y, p.id));
+  }
+
+  WSPD<float> wspd(points, t);
+  auto sep_pairs = wspd.compute_parallel_tree();
+  return fill_graph<decltype(sep_pairs)>(output, sep_pairs);
+
 }

@@ -120,5 +120,6 @@ struct SplitTreeTask : tbb::task {
 };
 
 int wspd_linear(graph_t *graph, graph_t *output, float t);
+int wspd_parallel(graph_t *graph, graph_t *output, float t);
 
 #include "wspd.hxx"
