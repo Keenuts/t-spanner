@@ -31,6 +31,41 @@ HyperRect<T>::HyperRect(const std::vector<Point<T>>& s)
   intervals.push_back(range_y);
 }
 
+/* quick fix i know it's as ugly as my geometry skills */
+template <typename T>
+HyperRect<T>::HyperRect(const std::vector<Point<T>>& s, const HyperRect<T>& rhs)
+: HyperRect<T>(std::vector<Point<T>>{s}) // delegated constructor c++11
+{
+  auto rdim_x = rhs.intervals[0];
+  auto rdim_y = rhs.intervals[1];
+  auto& dim_x = this->intervals[0];
+  auto& dim_y = this->intervals[1];
+
+  if (dim_x.first == dim_x.second) {
+    if (dim_x.first <= rdim_x.first)
+      dim_x.second = rdim_x.second;
+    else
+      dim_x.first = rdim_x.first;
+  }
+
+  if (dim_y.first == dim_y.second) {
+    if (dim_y.first <= rdim_y.first)
+      dim_y.second = rdim_y.second;
+    else
+      dim_y.first = rdim_y.first;
+  }
+
+  if (dim_x.first < rdim_x.first)
+    dim_x.first = rdim_x.first;
+  if (dim_x.second > rdim_x.second)
+    dim_x.second = rdim_x.second;
+  if (dim_y.first < rdim_y.first)
+    dim_y.first = rdim_y.first;
+  if (dim_y.second > rdim_y.second)
+    dim_y.second = rdim_y.second;
+
+}
+
 /* Split rectangle on maximum dimension */
 template <typename T>
 std::pair<HyperRect<T>, HyperRect<T>> HyperRect<T>::split() const
@@ -83,14 +118,20 @@ T HyperRect<T>::max_dim() const
 template <typename T>
 Sphere<T>::Sphere(const HyperRect<T>& rect)
 {
-  Point<T> up_left(rect.intervals[0].first, rect.intervals[1].second);
-  Point<T> down_right(rect.intervals[1].first, rect.intervals[0].second);
+  auto dim_x = rect.intervals[0];
+  auto dim_y = rect.intervals[1];
 
-  if (down_right.y - down_right.x == 0)
-    down_right.y = 0;
-  this->center = Point<T>((up_left.x + down_right.x) / 2,
-			  (up_left.y + down_right.y) / 2);
-  this->radius = up_left.euclidean_distance(this->center);
+  Point<T> orig(dim_x.first, dim_y.first);
+  Point<T> up_left(dim_x.first, dim_y.second);
+  Point<T> down_right(dim_x.second, dim_y.first);
+
+  auto a = orig.euclidean_distance(up_left);
+  auto b = orig.euclidean_distance(down_right);
+  auto c = std::sqrt(std::pow(a, 2.0) + std::pow(b, 2.0));
+
+  this->center = Point<T>((up_left.x + down_right.x) / 2.0,
+			  (up_left.y + down_right.y) / 2.0);
+  this->radius = c / 2.0;
 }
 
 template <typename T>
@@ -112,28 +153,15 @@ bool HyperRect<T>::is_well_separated(const HyperRect<T>& rhs, double stretch)
 }
 
 template <typename T>
-static inline void equalize_if_needed(std::vector<T>& a, std::vector<T>&b)
-{
-  auto a_sz = a.size();
-  auto b_sz = a.size();
-  if (a_sz == 2 && b_sz == 0) {
-    b.push_back(a.back());
-    a.pop_back();
-  } else if (a_sz == 0 && b_sz == 2) {
-    a.push_back(b.back());
-    b.pop_back();
-  }
-}
-
-template <typename T>
-tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s) const
+tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s,
+				const HyperRect<T>& box) const
 {
   if (s.size() == 0)
     return tree_ptr<T>(nullptr);
 
-  HyperRect<T> rect(s);	/* box that contains all points */
   if (s.size() == 1)
-    return tree_ptr<T>(new Tree<Point<T>, T>(s[0], rect));
+    return tree_ptr<T>(new Tree<Point<T>, T>(s[0], box));
+  HyperRect<T> rect(s, box);	/* box that contains all points */
 
   auto pr = rect.split();
   auto rect_left = pr.first;
@@ -147,11 +175,11 @@ tree_ptr<T> WSPD<T>::split_tree(const std::vector<Point<T>>& s) const
     else
       right.push_back(p);
 
-  equalize_if_needed(left, right);
+  //equalize_if_needed(left, right);
   auto elt = s[std::rand() % (s.size() - 1)];
   auto tree = new Tree<Point<T>, T>(elt /* unused */, rect);
-  tree->l = split_tree(left);
-  tree->r = split_tree(right);
+  tree->l = split_tree(left, rect_left);
+  tree->r = split_tree(right, rect_right);
 
   return tree_ptr<T>(tree);
 }
@@ -180,6 +208,8 @@ template <typename T>
 void WSPD<T>::compute_rec(const tree_ptr<T>& u, std::vector<ws_pair<T>>& res)
 const
 {
+  if (u == nullptr)
+    return;
   if (u->l == u->r) // leaf
     return;
   auto v = u->l;
@@ -192,7 +222,7 @@ const
 template <typename T>
 std::vector<ws_pair<T>> WSPD<T>::compute() const
 {
-  auto tree = this->split_tree(this->points);
+  auto tree = this->split_tree(this->points, HyperRect<T>(this->points));
   std::vector<ws_pair<T>> res;
   this->compute_rec(tree, res);
   return res;

@@ -30,6 +30,7 @@ struct HyperRect {
   HyperRect<T>() {}
   HyperRect<T>(const std::vector<std::pair<T, T>>& i) : intervals(i) {}
   HyperRect<T>(const std::vector<Point<T>>& s);
+  HyperRect<T>(const std::vector<Point<T>>& s, const HyperRect<T>& rhs);
 
   bool is_in(const Point<T>& p) const;
   bool is_well_separated(const HyperRect<T>& rhs, double stretch);
@@ -85,7 +86,7 @@ struct WSPD {
   std::vector<ws_pair<T>> compute() const;
 
 private:
-  tree_ptr<T> split_tree(const std::vector<Point<T>>& s) const;
+  tree_ptr<T> split_tree(const std::vector<Point<T>>& s, const HyperRect<T>& box) const;
 
   void find_pairs(const tree_ptr<T>& l, const tree_ptr<T>& r,
 		   std::vector<ws_pair<T>>& res)
