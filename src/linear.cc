@@ -51,29 +51,36 @@ int greedy_linear(struct graph_t *graph, struct graph_t *output, float t)
 {
   std::vector<struct edge_t> edges_a;
   std::vector<struct edge_t> edges_b;
-  printf("%p\n", graph);
-  for (size_t i = 0; i < graph->k; ++i)
-    for (size_t j = 0; j < graph->k; ++j)
+  for (size_t i = 0; i < graph->k; ++i) {
+    for (size_t j = 0; j < graph->k; ++j) {
       if (i == j)
-	continue;
+	      continue;
       else {
-	auto a = graph->nodes[i];
-	auto b = graph->nodes[j];
-	edge_t e(a.id, b.id, node_distance(a, b));
-	edges_a.push_back(e);
+         auto a = graph->nodes[i];
+         auto b = graph->nodes[j];
+         edge_t e(a.id, b.id, node_distance(a, b));
+         edges_a.push_back(e);
       }
+    }
+  }
 
-  std::cout << "done" << std::endl;
+  std::cout << "Step 1 done." << std::endl;
   sort(edges_a);
+  std::cout << "Sorting done." << std::endl;
 
+  uint64_t i = 0;
   for (struct edge_t e : edges_a) {
+    if (!(i % 1000))
+      printf("[%zu/%zu]\r\b\n", i, edges_a.size());
+    i++;
+
     float len = path_length(edges_b, graph->k, e.a, e.b);
     float d = t * node_distance(graph->nodes[e.a], graph->nodes[e.b]);
     if (len > d) {
       edges_b.push_back(e);
     }
   }
-  std::cout << "compute done" << std::endl;
+  std::cout << "compute done." << std::endl;
 
   output->k = count_nodes(edges_b);
   output->edge_nbr = edges_b.size();

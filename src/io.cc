@@ -22,6 +22,7 @@ static int parse_file(
   uint32_t *k
   )
 {
+   printf("[!] Parsing begin.\n");
   //std::map<std::string, struct node_t> names;
   uint32_t index = 0;
 
@@ -61,6 +62,8 @@ static int parse_file(
     }
   }
 #endif
+  printf("[!] Parsing done.\n");
+
   *k = index;
   return STATUS_SUCCESS;
 }
