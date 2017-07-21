@@ -24,4 +24,5 @@ class Profiling:
     def print_stats(self):
         ps = pstats.Stats(self.prof, stream=sys.stdout)
         ps.print_stats()
+        self.prof.clear()
 

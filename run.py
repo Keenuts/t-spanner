@@ -4,16 +4,14 @@ import tspanner
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+import profiling
 
 
 
 # Output to a file
 # tspanner.compute_greedy(1.0, "inputs/complet.graph", "output.dot")
 
-# Get graph in python
-# graph = tspanner.compute_greedy(1.2, "inputs/us_250.graph")
-# graph = tspanner.compute_wspd(1.2, "inputs/toto.graph")
-graph = tspanner.compute_wspd_parallel(1.2, "inputs/toto.graph")
+graph = tspanner.compute_greedy(1.5, "inputs/us_250.graph")
 
 print("Graph computations done.")
 G = nx.DiGraph()
@@ -33,3 +31,22 @@ nx.draw(G, pos=pos, node_size=0.1, with_label=True, arrows=False);
 # plt.figure(figsize=(500, 500))
 print("Output to png...")
 plt.savefig("output.png", format="PNG", dpi=1000)
+
+pr = profiling.Profiling()
+pr.set_args(1.2, "inputs/us_250.graph")
+
+pr.set_method("compute_greedy")
+pr.run()
+pr.print_stats()
+
+
+pr.set_args(1.2, "inputs/test.graph")
+
+
+pr.set_method("compute_wspd")
+pr.run()
+pr.print_stats()
+
+pr.set_method("compute_wspd_parallel")
+pr.run()
+pr.print_stats()
